@@ -9,11 +9,11 @@ body{
   margin:0;
   min-height:100vh;
   background:
-    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)),
+    linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.7)),
     url("bg1.jpg") no-repeat center center fixed;
   background-size:cover;
   overflow-x:hidden;
-  font-family:'Segoe UI',sans-serif;
+  font-family:Segoe UI,sans-serif;
   color:white;
   text-align:center;
 }
@@ -36,11 +36,18 @@ h1{margin-top:20px;text-shadow:0 0 15px pink;}
   background-size:cover;
   background-position:center;
 }
+
 .circle{border-radius:50%;}
 .heart{clip-path:path("M45 15 C45 -5,0 -5,0 25 C0 55,45 80,45 80 C45 80,90 55,90 25 C90 -5,45 -5,45 15 Z");}
 .hexagon{clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);}
 
-#text{margin:40px 20px;font-size:20px;text-shadow:0 0 10px pink;position:relative;z-index:2;}
+#text{
+  margin:40px 20px;
+  font-size:20px;
+  text-shadow:0 0 10px pink;
+  position:relative;
+  z-index:2;
+}
 
 button{
   padding:12px 25px;
@@ -55,10 +62,17 @@ button{
 #yes{background:hotpink;color:white;}
 #no{background:#333;color:white;}
 
-#msg{font-size:22px;margin-top:20px;color:pink;position:relative;z-index:2;}
+#msg{
+  font-size:22px;
+  margin-top:20px;
+  color:pink;
+  position:relative;
+  z-index:2;
+}
 
 #popup{
-  position:fixed; inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,0.6);
   display:none;
   justify-content:center;
@@ -81,7 +95,7 @@ button{
   padding:10px;
 }
 
-/* canvas fireworks */
+/* canvas for fireworks */
 canvas{
   position:fixed;
   inset:0;
@@ -92,19 +106,18 @@ canvas{
 /* petals */
 .petal{
   position:fixed;
-  top:-50px;
-  width:35px;
-  height:35px;
+  top:-40px;
+  width:25px;
+  height:25px;
   background:url("petal.png") no-repeat center/contain;
-  animation:fall linear forwards;
+  opacity:0.9;
+  animation:fall linear;
   pointer-events:none;
   z-index:1;
 }
 
 @keyframes fall{
-  to{
-    transform:translateY(110vh) rotate(360deg);
-  }
+  to{transform:translateY(110vh) rotate(360deg);}
 }
 </style>
 </head>
@@ -132,7 +145,7 @@ I love you lovleen ❤️🙈<br><br>
 </div>
 
 <canvas id="canvas"></canvas>
-<audio id="fireSound" src="fireworks1.mp3" preload="auto"></audio>
+<audio id="fireSound" src="fireworks1.mp3"></audio>
 
 <script>
 // gallery
@@ -145,16 +158,19 @@ for(let i=1;i<=77;i++){
   gallery.appendChild(d);
 }
 
-// petals (image based)
+// petals (real image)
 function createPetal(){
   const p=document.createElement("div");
   p.className="petal";
   p.style.left=Math.random()*100+"vw";
+  const size=Math.random()*20+15;
+  p.style.width=size+"px";
+  p.style.height=size+"px";
   p.style.animationDuration=(Math.random()*5+6)+"s";
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),10000);
 }
-setInterval(createPetal,250);
+setInterval(createPetal,200);
 
 // buttons
 document.getElementById("no").onclick=()=>{
@@ -163,6 +179,7 @@ document.getElementById("no").onclick=()=>{
 
 document.getElementById("yes").onclick=()=>{
   document.getElementById("popup").style.display="flex";
+  if(navigator.vibrate) navigator.vibrate([300,150,300]);
   startSoundLoop();
   startFireworks();
 };
@@ -171,7 +188,7 @@ function closePopup(){
   document.getElementById("popup").style.display="none";
 }
 
-// sound loop (3.8s)
+// sound loop
 const audio=document.getElementById("fireSound");
 function startSoundLoop(){
   audio.currentTime=0;
@@ -182,7 +199,7 @@ function startSoundLoop(){
   },3800);
 }
 
-// fireworks (YOUR SYSTEM)
+// fireworks (your system)
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -190,34 +207,26 @@ canvas.height=innerHeight;
 onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
 
 let fireworks=[];
-
 function randomColor(){
-  const colors=["red","yellow","lime","cyan","orange","violet","white","blue"];
-  return colors[Math.floor(Math.random()*colors.length)];
+  const c=["red","yellow","lime","cyan","orange","violet","white","blue"];
+  return c[Math.floor(Math.random()*c.length)];
 }
-
 function createFirework(x,y){
-  const color=randomColor();
-  let particles=[];
+  const col=randomColor();
+  let parts=[];
   for(let i=0;i<200;i++){
-    const angle=(Math.PI*2*i)/200;
-    const speed=Math.random()*6+3;
-    particles.push({
-      x,y,
-      vx:Math.cos(angle)*speed,
-      vy:Math.sin(angle)*speed,
-      alpha:1,
-      color
-    });
+    const a=Math.PI*2*i/200;
+    const s=Math.random()*6+3;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,color:col});
   }
-  fireworks.push(particles);
+  fireworks.push(parts);
 }
 
 function animate(){
   ctx.fillStyle="rgba(0,0,0,0.25)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  fireworks.forEach((fw,fi)=>{
+  fireworks.forEach((fw,i)=>{
     fw.forEach(p=>{
       p.x+=p.vx;
       p.y+=p.vy;
@@ -229,7 +238,7 @@ function animate(){
       ctx.fillStyle=p.color;
       ctx.fill();
     });
-    fireworks[fi]=fw.filter(p=>p.alpha>0);
+    fireworks[i]=fw.filter(p=>p.alpha>0);
   });
 
   fireworks=fireworks.filter(fw=>fw.length>0);
