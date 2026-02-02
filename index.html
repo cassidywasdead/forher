@@ -13,122 +13,59 @@ body {
     url("bg1.jpg") no-repeat center center fixed;
   background-size: cover;
   overflow-x: hidden;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Segoe UI, sans-serif;
   color: white;
   text-align: center;
 }
 
-h1 {
-  margin-top: 20px;
-  text-shadow: 0 0 15px pink;
+canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
 }
 
+h1 { margin-top:20px; text-shadow:0 0 15px pink; }
+
 #gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 15px;
-  padding: 30px;
-  justify-items: center;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:15px;
+  padding:30px;
 }
 
 .tile {
-  width: 90px;
-  height: 90px;
-  background-size: cover;
-  background-position: center;
-  transition: 0.3s;
+  width:90px;height:90px;
+  background-size:cover;
+  background-position:center;
 }
 
-.circle { border-radius: 50%; }
+.circle{border-radius:50%}
+.heart{clip-path:path("M45 15 C45 -5, 0 -5, 0 25 C0 55, 45 80, 45 80 C45 80, 90 55, 90 25 C90 -5, 45 -5, 45 15 Z")}
+.hexagon{clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%)}
 
-.heart {
-  clip-path: path("M45 15 C45 -5, 0 -5, 0 25 C0 55, 45 80, 45 80 C45 80, 90 55, 90 25 C90 -5, 45 -5, 45 15 Z");
-}
-
-.hexagon {
-  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
-}
-
-.tile:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 20px hotpink;
-}
-
-#text {
-  margin: 40px 20px;
-  font-size: 20px;
-  text-shadow: 0 0 10px pink;
-}
-
-button {
-  padding: 12px 25px;
-  font-size: 18px;
-  margin: 15px;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-}
-
-#yes {
-  background: hotpink;
-  color: white;
-}
-
-#no {
-  background: #333;
-  color: white;
-}
-
-#msg {
-  font-size: 22px;
-  margin-top: 20px;
-  color: pink;
-}
-
-/* popup */
-#popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-#popupBox {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 182, 193, 0.2);
-  border-radius: 20px;
-  padding: 25px;
-  width: 280px;
-  box-shadow: 0 0 25px pink;
-}
-
-/* petals */
 .petal {
   position: fixed;
   top: -50px;
   width: 30px;
-  pointer-events: none;
+  pointer-events:none;
   animation: fall linear forwards;
 }
 
 @keyframes fall {
-  to {
-    transform: translate(var(--wind), 110vh) rotate(360deg);
-  }
+  to { transform: translate(var(--wind), 110vh) rotate(360deg); }
 }
 </style>
 </head>
 
 <body>
 
+<canvas id="fw"></canvas>
+
 <h1>Every piece still shows you ❤️</h1>
 <div id="gallery"></div>
 
-<div id="text">
-I have my eyes on you since the very first day of your on earth ie 28nov2009 🐣<br>
-I love you lovleen ❤️🙈<br><br>
+<div>
+I love you lovleen ❤️<br><br>
 <b>Will you be mine forever?</b>
 </div>
 
@@ -136,67 +73,76 @@ I love you lovleen ❤️🙈<br><br>
 <button id="no">NO 🙄</button>
 <div id="msg"></div>
 
-<div id="popup">
-  <div id="popupBox">
-    <p>Thank you for loving me, I love you ❤️</p>
-    <button onclick="closePopup()">I love you more 💖</button>
-  </div>
-</div>
-
 <audio id="boom" src="fireworks1.mp3" loop></audio>
 
 <script>
-const gallery = document.getElementById("gallery");
-const shapes = ["circle", "heart", "hexagon"];
-
-for (let i = 1; i <= 77; i++) {
-  const div = document.createElement("div");
-  div.className = "tile " + shapes[i % shapes.length];
-  div.style.backgroundImage = `url("Zip-${i}.jpg")`;
-  gallery.appendChild(div);
+/* gallery */
+const gallery=document.getElementById("gallery");
+const shapes=["circle","heart","hexagon"];
+for(let i=1;i<=77;i++){
+ let d=document.createElement("div");
+ d.className="tile "+shapes[i%3];
+ d.style.backgroundImage=`url("Zip-${i}.jpg")`;
+ gallery.appendChild(d);
 }
 
-/* real rose petals */
-function createPetal() {
-  const petal = document.createElement("img");
-  petal.src = "rosepetal.png";
-  petal.className = "petal";
-  petal.style.left = Math.random() * 100 + "vw";
-  petal.style.opacity = Math.random();
-  petal.style.width = Math.random() * 20 + 20 + "px";
-  petal.style.animationDuration = Math.random()*5 + 6 + "s";
-  petal.style.setProperty("--wind", (Math.random()*200 - 100) + "px");
-  document.body.appendChild(petal);
-  setTimeout(()=>petal.remove(),12000);
+/* rose petals */
+function petal(){
+ let p=document.createElement("img");
+ p.src="rosepetal.png";
+ p.className="petal";
+ p.style.left=Math.random()*100+"vw";
+ p.style.width=Math.random()*20+20+"px";
+ p.style.opacity=Math.random();
+ p.style.animationDuration=Math.random()*4+6+"s";
+ p.style.setProperty("--wind",(Math.random()*200-100)+"px");
+ document.body.appendChild(p);
+ setTimeout(()=>p.remove(),12000);
 }
-setInterval(createPetal, 300);
+setInterval(petal,300);
 
-/* fireworks */
-function firework() {
-  const fw = document.createElement("div");
-  fw.innerHTML = "🎆";
-  fw.style.position = "fixed";
-  fw.style.left = Math.random() * 100 + "vw";
-  fw.style.top = Math.random() * 100 + "vh";
-  fw.style.fontSize = Math.random()*40+30+"px";
-  document.body.appendChild(fw);
-  setTimeout(()=>fw.remove(),1500);
+/* fireworks canvas */
+const canvas=document.getElementById("fw");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;canvas.height=innerHeight;
+let particles=[];
+
+function boom(){
+ let x=Math.random()*canvas.width;
+ let y=Math.random()*canvas.height*0.5;
+ for(let i=0;i<60;i++){
+  particles.push({
+   x,y,
+   vx:(Math.random()-0.5)*6,
+   vy:(Math.random()-0.5)*6,
+   life:100,
+   color:`hsl(${Math.random()*360},100%,60%)`
+  });
+ }
 }
 
-document.getElementById("no").onclick = () => {
-  document.getElementById("msg").innerText =
-  "❌ Option not available, try harder NCC babe 😎";
+function animate(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ particles.forEach((p,i)=>{
+  p.x+=p.vx; p.y+=p.vy; p.life--;
+  ctx.fillStyle=p.color;
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,3,0,Math.PI*2);
+  ctx.fill();
+  if(p.life<=0) particles.splice(i,1);
+ });
+ requestAnimationFrame(animate);
+}
+animate();
+
+document.getElementById("yes").onclick=()=>{
+ document.getElementById("boom").play();
+ setInterval(boom,600);
 };
 
-document.getElementById("yes").onclick = () => {
-  document.getElementById("popup").style.display = "flex";
-  document.getElementById("boom").play();
-  setInterval(firework,400);
+document.getElementById("no").onclick=()=>{
+ document.getElementById("msg").innerText="❌ Option not available 😎";
 };
-
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
-}
 </script>
 
 </body>
