@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+h1 {
+  text-align: center;
+  color: white;
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+/* Grid */
+#mosaic {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 8px;
+  padding: 10px;
+}
+
+/* Tile */
+.tile {
+  aspect-ratio: 1/1;
+  background-color: #111;
+  background-size: contain;   /* photo cut nahi hogi */
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shapes */
+.circle { border-radius: 50%; }
+
+.heart {
+  clip-path: polygon(
+    50% 95%,
+    10% 55%,
+    10% 30%,
+    30% 10%,
+    50% 28%,
+    70% 10%,
+    90% 30%,
+    90% 55%
+  );
+}
+
+.hexagon {
+  clip-path: polygon(
+    25% 5%, 75% 5%,
+    100% 50%,
+    75% 95%, 25% 95%,
+    0% 50%
+  );
+}
+
+/* Petals */
+.petal {
+  position: fixed;
+  top: -40px;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  background-size: cover;
+  animation: fall linear infinite;
+  z-index: 999;
+}
+
+/* Different flower petals */
+.p1 { background-image: url("https://i.imgur.com/R9XUjfF.png"); } /* rose */
+.p2 { background-image: url("https://i.imgur.com/0Z8FQYB.png"); } /* flower */
+.p3 { background-image: url("https://i.imgur.com/y9dGQ7R.png"); } /* petals */
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+
+#proposal {
+  text-align: center;
+  color: white;
+  margin: 15px;
+  font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Every piece still shows you ❤️</h1>
+
+<div id="mosaic"></div>
+
+<div id="proposal">
+  I had many pictures… but only one question. <br><br>
+  <b>Will you be mine? 💖</b>
+</div>
+
+<script>
+const mosaic = document.getElementById("mosaic");
+const shapes = ["circle", "heart", "hexagon", ""];
+const petalTypes = ["p1", "p2", "p3"];
+
+// Load 77 photos
+for (let i = 1; i <= 77; i++) {
+  let div = document.createElement("div");
+  div.className = "tile " + shapes[i % shapes.length];
+  div.style.backgroundImage = "url('Zip-" + i + ".jpg')";
+  mosaic.appendChild(div);
+}
+
+// Strong petal shower 🌹🌸
+for (let i = 0; i < 45; i++) {
+  let petal = document.createElement("div");
+  petal.className = "petal " + petalTypes[i % petalTypes.length];
+  petal.style.left = Math.random() * 100 + "vw";
+  petal.style.animationDuration = (3 + Math.random() * 3) + "s";
+  petal.style.opacity = Math.random();
+  petal.style.transform = "scale(" + (0.6 + Math.random()) + ")";
+  document.body.appendChild(petal);
+}
+</script>
+
+</body>
+</html>
