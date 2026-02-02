@@ -29,6 +29,7 @@ h1 {
   gap: 15px;
   padding: 30px;
   justify-items: center;
+  z-index:1;
 }
 
 .tile {
@@ -69,15 +70,8 @@ button {
   cursor: pointer;
 }
 
-#yes {
-  background: hotpink;
-  color: white;
-}
-
-#no {
-  background: #333;
-  color: white;
-}
+#yes { background: hotpink; color: white; }
+#no { background: #333; color: white; }
 
 #msg {
   font-size: 22px;
@@ -93,7 +87,7 @@ button {
   display: none;
   justify-content: center;
   align-items: center;
-  z-index:5;
+  z-index:10;
 }
 
 #popupBox {
@@ -118,7 +112,7 @@ button {
   padding: 10px;
 }
 
-/* FIREWORK CANVAS */
+/* Fireworks canvas */
 canvas{
   position:fixed;
   inset:0;
@@ -144,7 +138,6 @@ I love you lovleen ❤️🙈<br><br>
 
 <div id="msg"></div>
 
-<!-- Popup -->
 <div id="popup">
   <div id="popupBox">
     <p>Thank you for loving me, I love you ❤️</p>
@@ -156,102 +149,95 @@ I love you lovleen ❤️🙈<br><br>
 <audio id="fireSound" src="fireworks1.mp3" preload="auto"></audio>
 
 <script>
-/* gallery */
+// --------- GALLERY ----------
 const gallery = document.getElementById("gallery");
-const shapes = ["circle", "heart", "hexagon"];
+const shapes = ["circle","heart","hexagon"];
 
-for (let i = 1; i <= 77; i++) {
-  const div = document.createElement("div");
-  div.className = "tile " + shapes[i % shapes.length];
-  div.style.backgroundImage = `url("Zip-${i}.jpg")`;
+for(let i=1;i<=77;i++){
+  const div=document.createElement("div");
+  div.className="tile "+shapes[i%shapes.length];
+  div.style.backgroundImage=`url("Zip-${i}.jpg")`;
   gallery.appendChild(div);
 }
 
-/* petals */
-function createPetal() {
-  const petal = document.createElement("div");
-  petal.innerHTML = "🌸";
-  petal.style.position = "fixed";
-  petal.style.left = Math.random() * 100 + "vw";
-  petal.style.top = "-20px";
-  petal.style.fontSize = Math.random() * 20 + 15 + "px";
-  petal.style.opacity = Math.random();
-  petal.style.animation = `fall ${Math.random()*5+5}s linear`;
+// -------- PETALS ----------
+function createPetal(){
+  const petal=document.createElement("div");
+  petal.innerHTML="🌸";
+  petal.style.position="fixed";
+  petal.style.left=Math.random()*100+"vw";
+  petal.style.top="-20px";
+  petal.style.fontSize=Math.random()*20+15+"px";
+  petal.style.opacity=Math.random();
+  petal.style.animation=`fall ${Math.random()*5+5}s linear`;
   document.body.appendChild(petal);
-  setTimeout(() => petal.remove(), 10000);
+  setTimeout(()=>petal.remove(),10000);
 }
-setInterval(createPetal, 200);
+setInterval(createPetal,200);
 
-/* buttons */
-document.getElementById("no").onclick = () => {
-  document.getElementById("msg").innerText =
-  "❌ Option not available, try harder NCC babe 😎";
+// -------- BUTTONS ----------
+document.getElementById("no").onclick=()=>{
+  document.getElementById("msg").innerText="❌ Option not available, try harder NCC babe 😎";
 };
 
-document.getElementById("yes").onclick = () => {
-  document.getElementById("msg").innerText = "";
-  document.getElementById("popup").style.display = "flex";
-
-  if (navigator.vibrate) navigator.vibrate([300,150,300]);
-
+document.getElementById("yes").onclick=()=>{
+  document.getElementById("msg").innerText="";
+  document.getElementById("popup").style.display="flex";
+  if(navigator.vibrate) navigator.vibrate([300,150,300]);
   startSoundLoop();
   startFireworks();
 };
 
-/* popup close */
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
+function closePopup(){
+  document.getElementById("popup").style.display="none";
 }
 
-/* 🔊 SOUND LOOP */
-const audio = document.getElementById("fireSound");
+// -------- SOUND ----------
+const audio=document.getElementById("fireSound");
 let soundInterval;
-
 function startSoundLoop(){
-  audio.currentTime = 0;
+  audio.currentTime=0;
   audio.play();
-  soundInterval = setInterval(()=>{
-    audio.currentTime = 0;
+  soundInterval=setInterval(()=>{
+    audio.currentTime=0;
     audio.play();
-  },3800); // adjust if needed
+  },3800);
 }
 
-/* 🎆 FIREWORK SYSTEM */
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
+// -------- FIREWORKS ----------
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
 
 let fireworks=[];
 
 function randomColor(){
-  const colors=["red","yellow","lime","cyan","orange","violet","white","blue"];
-  return colors[Math.floor(Math.random()*colors.length)];
+  const c=["red","yellow","lime","cyan","orange","violet","white","blue"];
+  return c[Math.floor(Math.random()*c.length)];
 }
 
 function createFirework(x,y){
   const color=randomColor();
-  let particles=[];
+  let parts=[];
   for(let i=0;i<200;i++){
-    const angle=(Math.PI*2*i)/200;
-    const speed=Math.random()*6+3;
-    particles.push({
-      x,y,
-      vx:Math.cos(angle)*speed,
-      vy:Math.sin(angle)*speed,
-      alpha:1,
-      color
-    });
+    const a=(Math.PI*2*i)/200;
+    const s=Math.random()*6+3;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,color});
   }
-  fireworks.push(particles);
+  fireworks.push(parts);
 }
 
 function animate(){
   ctx.fillStyle="rgba(0,0,0,0.25)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  fireworks.forEach((fw,fi)=>{
+  fireworks.forEach((fw,i)=>{
     fw.forEach(p=>{
       p.x+=p.vx;
       p.y+=p.vy;
@@ -263,9 +249,8 @@ function animate(){
       ctx.fillStyle=p.color;
       ctx.fill();
     });
-    fireworks[fi]=fw.filter(p=>p.alpha>0);
+    fireworks[i]=fw.filter(p=>p.alpha>0);
   });
-
   fireworks=fireworks.filter(fw=>fw.length>0);
   requestAnimationFrame(animate);
 }
@@ -278,15 +263,11 @@ function startFireworks(){
     createFirework(canvas.width*0.7,y);
   },1200);
 }
-
-canvas.onclick = e => createFirework(e.clientX,e.clientY);
 </script>
 
 <style>
-@keyframes fall {
-  to {
-    transform: translateY(110vh) rotate(360deg);
-  }
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg);}
 }
 </style>
 
