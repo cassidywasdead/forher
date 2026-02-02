@@ -18,106 +18,61 @@ body {
   text-align: center;
 }
 
-h1 {
-  margin-top: 20px;
-  text-shadow: 0 0 15px pink;
-}
+h1 { margin-top:20px; text-shadow:0 0 15px pink; }
 
 #gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 15px;
-  padding: 30px;
-  justify-items: center;
-  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:15px;
+  padding:30px;
+  justify-items:center;
+  position:relative;
+  z-index:2;
 }
 
 .tile {
-  width: 90px;
-  height: 90px;
-  background-size: cover;
-  background-position: center;
-  transition: 0.3s;
+  width:90px;
+  height:90px;
+  background-size:cover;
+  background-position:center;
 }
 
-.circle { border-radius: 50%; }
+.circle{border-radius:50%;}
+.heart{clip-path:path("M45 15 C45 -5,0 -5,0 25 C0 55,45 80,45 80 C45 80,90 55,90 25 C90 -5,45 -5,45 15 Z");}
+.hexagon{clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);}
 
-.heart {
-  clip-path: path("M45 15 C45 -5, 0 -5, 0 25 C0 55, 45 80, 45 80 C45 80, 90 55, 90 25 C90 -5, 45 -5, 45 15 Z");
+#text{margin:40px 20px;font-size:20px;text-shadow:0 0 10px pink;position:relative;z-index:2;}
+
+button{padding:12px 25px;font-size:18px;margin:15px;border:none;border-radius:30px;cursor:pointer;position:relative;z-index:2;}
+#yes{background:hotpink;color:white;}
+#no{background:#333;color:white;}
+
+#msg{font-size:22px;margin-top:20px;color:pink;position:relative;z-index:2;}
+
+#popup{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:5;
 }
-
-.hexagon {
-  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+#popupBox{
+  backdrop-filter:blur(10px);
+  background:rgba(255,182,193,0.2);
+  border-radius:20px;
+  padding:25px;
+  width:280px;
+  box-shadow:0 0 25px pink;
 }
+#popupBox button{width:100%;background:hotpink;color:white;border-radius:20px;padding:10px;}
 
-.tile:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 20px hotpink;
-}
-
-#text {
-  margin: 40px 20px;
-  font-size: 20px;
-  text-shadow: 0 0 10px pink;
-}
-
-button {
-  padding: 12px 25px;
-  font-size: 18px;
-  margin: 15px;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-}
-
-#yes { background: hotpink; color: white; }
-#no { background: #333; color: white; }
-
-#msg {
-  font-size: 22px;
-  margin-top: 20px;
-  color: pink;
-}
-
-/* Popup */
-#popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index:10;
-}
-
-#popupBox {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 182, 193, 0.2);
-  border-radius: 20px;
-  padding: 25px;
-  width: 280px;
-  box-shadow: 0 0 25px pink;
-}
-
-#popupBox p {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-#popupBox button {
-  width: 100%;
-  background: hotpink;
-  color: white;
-  border-radius: 20px;
-  padding: 10px;
-}
-
-/* Fireworks canvas */
+/* canvas BEHIND */
 canvas{
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:2;
+  z-index:1;
 }
 </style>
 </head>
@@ -135,7 +90,6 @@ I love you lovleen ❤️🙈<br><br>
 
 <button id="yes">YES 💖</button>
 <button id="no">NO 🙄</button>
-
 <div id="msg"></div>
 
 <div id="popup">
@@ -146,107 +100,87 @@ I love you lovleen ❤️🙈<br><br>
 </div>
 
 <canvas id="canvas"></canvas>
-<audio id="fireSound" src="fireworks1.mp3" preload="auto"></audio>
+<audio id="fireSound" src="fireworks1.mp3"></audio>
 
 <script>
-// --------- GALLERY ----------
-const gallery = document.getElementById("gallery");
-const shapes = ["circle","heart","hexagon"];
-
+// gallery
+const gallery=document.getElementById("gallery");
+const shapes=["circle","heart","hexagon"];
 for(let i=1;i<=77;i++){
-  const div=document.createElement("div");
-  div.className="tile "+shapes[i%shapes.length];
-  div.style.backgroundImage=`url("Zip-${i}.jpg")`;
-  gallery.appendChild(div);
+  const d=document.createElement("div");
+  d.className="tile "+shapes[i%3];
+  d.style.backgroundImage=`url("Zip-${i}.jpg")`;
+  gallery.appendChild(d);
 }
 
-// -------- PETALS ----------
-function createPetal(){
-  const petal=document.createElement("div");
-  petal.innerHTML="🌸";
-  petal.style.position="fixed";
-  petal.style.left=Math.random()*100+"vw";
-  petal.style.top="-20px";
-  petal.style.fontSize=Math.random()*20+15+"px";
-  petal.style.opacity=Math.random();
-  petal.style.animation=`fall ${Math.random()*5+5}s linear`;
-  document.body.appendChild(petal);
-  setTimeout(()=>petal.remove(),10000);
+// petals
+function petal(){
+  const p=document.createElement("div");
+  p.innerHTML="🌸";
+  p.style.position="fixed";
+  p.style.left=Math.random()*100+"vw";
+  p.style.top="-20px";
+  p.style.fontSize=Math.random()*20+15+"px";
+  p.style.animation="fall 8s linear";
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),8000);
 }
-setInterval(createPetal,200);
+setInterval(petal,200);
 
-// -------- BUTTONS ----------
+// popup buttons
 document.getElementById("no").onclick=()=>{
   document.getElementById("msg").innerText="❌ Option not available, try harder NCC babe 😎";
 };
 
 document.getElementById("yes").onclick=()=>{
-  document.getElementById("msg").innerText="";
   document.getElementById("popup").style.display="flex";
   if(navigator.vibrate) navigator.vibrate([300,150,300]);
   startSoundLoop();
   startFireworks();
 };
 
-function closePopup(){
-  document.getElementById("popup").style.display="none";
-}
+function closePopup(){document.getElementById("popup").style.display="none";}
 
-// -------- SOUND ----------
+// sound
 const audio=document.getElementById("fireSound");
-let soundInterval;
 function startSoundLoop(){
   audio.currentTime=0;
   audio.play();
-  soundInterval=setInterval(()=>{
-    audio.currentTime=0;
-    audio.play();
-  },3800);
+  setInterval(()=>{audio.currentTime=0;audio.play();},3800);
 }
 
-// -------- FIREWORKS ----------
+// fireworks
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
-
-function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-}
-resize();
-window.addEventListener("resize",resize);
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
 
 let fireworks=[];
-
 function randomColor(){
   const c=["red","yellow","lime","cyan","orange","violet","white","blue"];
   return c[Math.floor(Math.random()*c.length)];
 }
-
 function createFirework(x,y){
-  const color=randomColor();
+  const col=randomColor();
   let parts=[];
-  for(let i=0;i<200;i++){
-    const a=(Math.PI*2*i)/200;
+  for(let i=0;i<150;i++){
+    const a=Math.PI*2*i/150;
     const s=Math.random()*6+3;
-    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,color});
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,color:col});
   }
   fireworks.push(parts);
 }
 
 function animate(){
-  ctx.fillStyle="rgba(0,0,0,0.25)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
+  ctx.clearRect(0,0,canvas.width,canvas.height); // ❗ no black layer
   fireworks.forEach((fw,i)=>{
     fw.forEach(p=>{
-      p.x+=p.vx;
-      p.y+=p.vy;
-      p.vy+=0.03;
-      p.alpha-=0.01;
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.03; p.alpha-=0.01;
       ctx.globalAlpha=p.alpha;
+      ctx.fillStyle=p.color;
       ctx.beginPath();
       ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
-      ctx.fillStyle=p.color;
       ctx.fill();
     });
     fireworks[i]=fw.filter(p=>p.alpha>0);
@@ -266,9 +200,7 @@ function startFireworks(){
 </script>
 
 <style>
-@keyframes fall{
-  to{transform:translateY(110vh) rotate(360deg);}
-}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);}}
 </style>
 
 </body>
