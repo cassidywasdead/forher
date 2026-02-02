@@ -17,7 +17,19 @@ body{
   color:white;
   text-align:center;
 }
+.petal{
+  position: fixed;
+  top: -40px;
+  pointer-events: none;
+  z-index: 2;
+  animation: fall linear forwards;
+}
 
+@keyframes fall{
+  to{
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
 h1{margin-top:20px;text-shadow:0 0 15px pink;}
 
 #gallery{
@@ -104,15 +116,24 @@ canvas{
 }
 
 /* petals */
-.petal{
-  position:fixed;
-  top:-40px;
-  background:url("petal.png") no-repeat center/contain;
-  opacity:0.9;
-  animation:fall linear;
-  pointer-events:none;
-  z-index:1;
+.// ==== PETALS ====
+function createPetal(){
+  const p=document.createElement("img");
+  p.src="rosepetal.PNG";   // ⚠️ EXACT same name as file
+  p.className="petal";
+  p.style.left=Math.random()*100+"vw";
+
+  const size=Math.random()*20+15;
+  p.style.width=size+"px";
+  p.style.height=size+"px";
+
+  p.style.animationDuration=(Math.random()*5+6)+"s";
+
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),10000);
 }
+
+setInterval(createPetal,200);
 
 @keyframes fall{
   to{transform:translateY(110vh) rotate(360deg);}
