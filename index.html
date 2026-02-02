@@ -2,42 +2,108 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fireworks + Petals</title>
+<title>For Lovleen ❤️</title>
 
 <style>
-html,body{
+body{
   margin:0;
-  padding:0;
-  overflow:hidden;
-  background:black;
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)),
+    url("bg1.jpg") no-repeat center center fixed;
+  background-size:cover;
+  overflow-x:hidden;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  text-align:center;
 }
-canvas{display:block;}
 
-#startBtn{
+h1{margin-top:20px;text-shadow:0 0 15px pink;}
+
+#gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:15px;
+  padding:30px;
+  justify-items:center;
+  position:relative;
+  z-index:2;
+}
+
+.tile{
+  width:90px;
+  height:90px;
+  background-size:cover;
+  background-position:center;
+}
+.circle{border-radius:50%;}
+.heart{clip-path:path("M45 15 C45 -5,0 -5,0 25 C0 55,45 80,45 80 C45 80,90 55,90 25 C90 -5,45 -5,45 15 Z");}
+.hexagon{clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);}
+
+#text{margin:40px 20px;font-size:20px;text-shadow:0 0 10px pink;position:relative;z-index:2;}
+
+button{
+  padding:12px 25px;
+  font-size:18px;
+  margin:15px;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  position:relative;
+  z-index:2;
+}
+#yes{background:hotpink;color:white;}
+#no{background:#333;color:white;}
+
+#msg{font-size:22px;margin-top:20px;color:pink;position:relative;z-index:2;}
+
+#popup{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:5;
+}
+#popupBox{
+  backdrop-filter:blur(10px);
+  background:rgba(255,182,193,0.2);
+  border-radius:20px;
+  padding:25px;
+  width:280px;
+  box-shadow:0 0 25px pink;
+}
+#popupBox button{
+  width:100%;
+  background:hotpink;
+  color:white;
+  border-radius:20px;
+  padding:10px;
+}
+
+/* canvas fireworks */
+canvas{
   position:fixed;
   inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:black;
-  color:white;
-  font-size:24px;
-  font-family:Arial;
-  z-index:10;
+  pointer-events:none;
+  z-index:1;
 }
 
-/* 🌹 PETALS */
+/* petals */
 .petal{
   position:fixed;
-  top:-60px;
-  width:30px;
-  pointer-events:none;
+  top:-50px;
+  width:35px;
+  height:35px;
+  background:url("petal.png") no-repeat center/contain;
   animation:fall linear forwards;
+  pointer-events:none;
+  z-index:1;
 }
 
 @keyframes fall{
   to{
-    transform:translate(var(--wind),110vh) rotate(360deg);
+    transform:translateY(110vh) rotate(360deg);
   }
 }
 </style>
@@ -45,43 +111,84 @@ canvas{display:block;}
 
 <body>
 
-<div id="startBtn">Tap to Start 🎆</div>
-<canvas id="canvas"></canvas>
+<h1>Every piece still shows you ❤️</h1>
+<div id="gallery"></div>
 
+<div id="text">
+I have my eyes on you since the very first day of your on earth ie 28nov2009 🐣<br>
+I love you lovleen ❤️🙈<br><br>
+<b>Will you be mine forever?</b>
+</div>
+
+<button id="yes">YES 💖</button>
+<button id="no">NO 🙄</button>
+<div id="msg"></div>
+
+<div id="popup">
+  <div id="popupBox">
+    <p>Thank you for loving me, I love you ❤️</p>
+    <button onclick="closePopup()">I love you more 💖</button>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
 <audio id="fireSound" src="fireworks1.mp3" preload="auto"></audio>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
+// gallery
+const gallery=document.getElementById("gallery");
+const shapes=["circle","heart","hexagon"];
+for(let i=1;i<=77;i++){
+  const d=document.createElement("div");
+  d.className="tile "+shapes[i%3];
+  d.style.backgroundImage=`url("Zip-${i}.jpg")`;
+  gallery.appendChild(d);
+}
 
-const audio = document.getElementById("fireSound");
-audio.volume = 1;
+// petals (image based)
+function createPetal(){
+  const p=document.createElement("div");
+  p.className="petal";
+  p.style.left=Math.random()*100+"vw";
+  p.style.animationDuration=(Math.random()*5+6)+"s";
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),10000);
+}
+setInterval(createPetal,250);
 
-const startBtn = document.getElementById("startBtn");
-
-let soundInterval;
-
-startBtn.onclick = () => {
-  startBtn.style.display="none";
-  startSoundLoop();
-  startFireworks();
-  startPetals();
+// buttons
+document.getElementById("no").onclick=()=>{
+  document.getElementById("msg").innerText="❌ Option not available, try harder NCC babe 😎";
 };
 
-// 🔊 HARD LOOP (3.8 seconds)
+document.getElementById("yes").onclick=()=>{
+  document.getElementById("popup").style.display="flex";
+  startSoundLoop();
+  startFireworks();
+};
+
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+// sound loop (3.8s)
+const audio=document.getElementById("fireSound");
 function startSoundLoop(){
-  audio.currentTime = 0;
+  audio.currentTime=0;
   audio.play();
-  soundInterval = setInterval(()=>{
-    audio.currentTime = 0;
+  setInterval(()=>{
+    audio.currentTime=0;
     audio.play();
   },3800);
 }
 
-// 🎆 FIREWORK SYSTEM (TERA WALA)
+// fireworks (YOUR SYSTEM)
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
+
 let fireworks=[];
 
 function randomColor(){
@@ -90,7 +197,7 @@ function randomColor(){
 }
 
 function createFirework(x,y){
-  const color = randomColor();
+  const color=randomColor();
   let particles=[];
   for(let i=0;i<200;i++){
     const angle=(Math.PI*2*i)/200;
@@ -130,34 +237,12 @@ function animate(){
 }
 animate();
 
-// 🎇 2 fireworks ek line me
 function startFireworks(){
   setInterval(()=>{
-    let y = Math.random()*canvas.height*0.5+100;
+    let y=Math.random()*canvas.height*0.5+100;
     createFirework(canvas.width*0.3,y);
     createFirework(canvas.width*0.7,y);
   },1200);
-}
-
-// click = extra blast
-canvas.onclick = e => createFirework(e.clientX,e.clientY);
-
-// 🌹 REAL ROSE PETALS
-function createPetal(){
-  let p=document.createElement("img");
-  p.src="rosepetal.PNG"; // .PNG same as GitHub
-  p.className="petal";
-  p.style.left=Math.random()*100+"vw";
-  p.style.width=Math.random()*20+20+"px";
-  p.style.opacity=Math.random()*0.8+0.2;
-  p.style.animationDuration=Math.random()*4+6+"s";
-  p.style.setProperty("--wind",(Math.random()*200-100)+"px");
-  document.body.appendChild(p);
-  setTimeout(()=>p.remove(),12000);
-}
-
-function startPetals(){
-  setInterval(createPetal,250);
 }
 </script>
 
